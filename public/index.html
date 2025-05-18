@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CarFax Pro – Vehicle History Reports</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="main-header">
+    <div class="container nav-container">
+      <div class="logo">
+        <img src="imgs/carFaxPro.jpg" alt="CarFax Pro Logo"/>
+      </div>
+      <nav class="navigation">
+        <ul>
+          <li><a href="/">HOME</a></li>
+          <li><a href="#pricing">PRICING PLAN</a></li>
+          <li><a href="#testimonials">TESTIMONIALS</a></li>
+          <li><a href="#contact">CONTACT US</a></li>
+        </ul>
+      </nav>
+      <a href="#pricing" class="btn-report">GET REPORT</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h4><strong>CarFax Pro Services</strong></h4>
+      <h1>Trusted Worldwide <span class="highlight">for Vehicle History Reports</span></h1>
+      <p>
+        “Serving Canada, the USA, and beyond, CarFax Pro is a globally trusted platform for comprehensive vehicle history reports. Our data complies with Canada’s Motor Vehicle Safety Act, the U.S. National Motor Vehicle Title Information System (NMVTIS), and other international standards, ensuring accuracy, reliability, and transparency.”
+      </p>
+      <a href="#pricing" class="order-link">Order Inspection</a>
+    </div>
+  </section>
+
+    <!-- why choose us -->
+    <section class="why-choose">
+    <div class="why-container">
+        <div class="why-text animate-text">
+        <h3 class="why-highlight">Why Choose VINSafeInspection?</h3>
+        <h2>Comprehensive Insights,<br>Instant Results</h2>
+        <p>
+            Our detailed report includes detailed vehicle checks of the Body, Paint,
+            Chrome, Signs of accident, Damage and Rust etc. We photograph the
+            under body, check instrumentation, Tyre’s, Wheels and Interior. In short, we
+            do just about everything it’s possible without actually taking the vehicle apart!
+        </p>
+        </div>
+        <div class="why-image">
+        <img src="rollsRoyce.jpg" alt="Luxury Car Front View" />
+        </div>
+    </div>
+    </section>
+
+    <!-- Pricing plan -->
+    <section class="pricing-section" id="pricing">
+        <section class="pricing-section">
+    <div class="pricing-heading">
+        <h3>
+        Choose the Plan That Fits Your Needs<br>
+        <span>Flexible Pricing for Reliable Insights</span>
+        </h3>
+    </div>
+
+    <div class="pricing-container">
+        <!-- Bike Card -->
+        <div class="pricing-card">
+        <span class="sale-tag">Sale</span>
+        <img src="bike.png" alt="Bike">
+        <h3>Bike Inspection Report</h3>
+        <div class="price"><del>$40.00</del> $20.00</div>
+        <ul>
+            <li>Vehicle Overview</li>
+            <li>Ownership Details</li>
+            <li>Accident History</li>
+            <li>Service Records</li>
+        </ul>
+        <button class="order-btn"><a href="/form.html?type=bike">Order Inspection</a></button>
+        </div>
+
+        <!-- Car Card -->
+        <div class="pricing-card featured">
+        <span class="sale-tag">Sale</span>
+        <img src="car.png" alt="Car">
+        <h3>Car Inspection Report</h3>
+        <div class="price"><del>$45.00</del> $25.00</div>
+        <ul>
+            <li>Service Records</li>
+            <li>Title Check</li>
+            <li>Odometer History</li>
+            <li>Inspection Reports</li>
+        </ul>
+        <button class="order-btn"><a href="/form.html?type=car">Order Inspection</a>
+</button>
+        </div>
+
+        <!-- Truck Card -->
+        <div class="pricing-card">
+        <span class="sale-tag">Sale</span>
+        <img src="truck.png" alt="Truck">
+        <h3>Truck Inspection Report</h3>
+        <div class="price"><del>$50.00</del> $30.00</div>
+        <ul>
+            <li>All Features from Standard</li>
+            <li>Detailed Accident Report</li>
+            <li>Market Value Estimate</li>
+            <li>Emissions & Safety Check</li>
+        </ul>
+        <button class="order-btn"><a href="/form.html?type=truck">Order Inspection</a>
+</button>
+        </div>
+    </div>
+    </section>
+
+    <!-- inspection report -->
+    <section class="inspection-carousel-section">
+    <h2 class="carousel-heading">Inspection Report Overview</h2>
+    <div class="carousel-container">
+        <button class="arrow left" onclick="prevCard()">&#10094;</button>
+
+        <div class="inspection-card" id="inspectionCard">
+        <div class="defect-info">
+            <h4>Porte arrière gauche bas</h4>
+            <p>Dent: 0 à 15mm</p>
+            <p><strong>Frais Forfaitaire:</strong> 150,00€</p>
+        </div>
+        <div class="defect-image">
+            <img src="img1.png" alt="Inspection Image" />
+        </div>
+        </div>
+
+        <button class="arrow right" onclick="nextCard()">&#10095;</button>
+    </div>
+    </section>
+
+    <!-- Testamonials and reviewss -->
+    <section class="testimonials" id="testimonials">
+    <h2>What Our Customers Say</h2>
+    <div class="testimonial-container">
+        <div class="testimonial active">
+        <p>"Thorough and professional inspection. Highly recommend!"</p>
+        <div class="stars">★★★★★</div>
+        <h4>— Sarah M. (5/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"The report helped me avoid a bad purchase. Thank you!"</p>
+        <div class="stars">★★★★½</div>
+        <h4>— Jason L. (4.5/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"Fast delivery of detailed insights. Great service."</p>
+        <div class="stars">★★★★★</div>
+        <h4>— Emily R. (5/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"Clear photos and transparent feedback."</p>
+        <div class="stars">★★★★</div>
+        <h4>— Dinesh K. (4/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"Saved me from buying a damaged vehicle!"</p>
+        <div class="stars">★★★★★</div>
+        <h4>— Kevin T. (5/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"Great value for money and detailed analysis."</p>
+        <div class="stars">★★★★½</div>
+        <h4>— Amanda C. (4.5/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"Professional staff and accurate reports."</p>
+        <div class="stars">★★★★½</div>
+        <h4>— Ahmed Z. (4.5/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"I trust their service for all my car buys."</p>
+        <div class="stars">★★★★½</div>
+        <h4>— Rachel P. (5/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"Visual evidence made everything clear."</p>
+        <div class="stars">★★★★½</div>
+        <h4>— Luca G. (4.5/5)</h4>
+        </div>
+        <div class="testimonial">
+        <p>"Better than expected. Reliable and fast."</p>
+        <div class="stars">★★★★★</div>
+        <h4>— Zoe W. (5/5)</h4>
+        </div>
+    </div>
+    </section>
+
+    <!-- Contact Us -->
+    <section class="contact-section" id="contact">
+        <h2>Contact Us</h2>
+        <form class="contact-form">
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
+        <input type="tel" name="phone" placeholder="(555) 555-5555" pattern="\(\d{3}\) \d{3}-\d{4}" required />
+        <textarea name="message" placeholder="Your Message" required></textarea>
+        <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <!-- footer -->
+        <footer class="site-footer">
+            <div class="footer-container">
+                <div class="footer-logo">
+                <img src="imgs/carFaxPro.jpg" alt="CarFax Pro Logo">
+                </div>
+                <div class="footer-info">
+                <p><strong>Email us:</strong> support@carfaxpro.com</p>
+                <p class="motto">“Driven by Data, Trusted Worldwide.”</p>
+                </div>
+            </div>
+        </footer>
+
+
+
+
+<script>
+ const inspectionData = [
+  {
+    title: "Left Front Door",
+    size: "0 to 15mm",
+    price: "€150.00",
+    image: "imgs/left_front_door.png"
+  },
+  {
+    title: "Right Rear Door",
+    size: "15 to 30mm",
+    price: "€250.00",
+    image: "imgs/right_rear_door.png"
+  },
+  {
+    title: "Engine Hood",
+    size: "15 to 40mm",
+    price: "€300.00",
+    image: "imgs/engine_hood.png"
+  },
+  {
+    title: "Right Front Fender",
+    size: "0 to 15mm",
+    price: "€150.00",
+    image: "imgs/right_front_fender.png"
+  },
+  {
+    title: "Rear Bumper",
+    size: "20 to 35mm",
+    price: "€275.00",
+    image: "imgs/rear_bumper.png"
+  }
+];
+
+
+  let currentIndex = 0;
+
+  function updateCard(index) {
+    const card = document.getElementById("inspectionCard");
+    const data = inspectionData[index];
+
+    card.innerHTML = `
+      <div class="defect-info">
+        <h4>${data.title}</h4>
+        <p>Dent: ${data.size}</p>
+        <p><strong>Flat charges:</strong> ${data.price}</p>
+      </div>
+      <div class="defect-image">
+        <img src="${data.image}" alt="Inspection Image" />
+      </div>
+    `;
+  }
+
+  function nextCard() {
+    currentIndex = (currentIndex + 1) % inspectionData.length;
+    updateCard(currentIndex);
+  }
+
+  function prevCard() {
+    currentIndex = (currentIndex - 1 + inspectionData.length) % inspectionData.length;
+    updateCard(currentIndex);
+  }
+
+  window.onload = () => updateCard(currentIndex);
+
+    // testamonial reviews..
+
+  const testimonials = document.querySelectorAll('.testimonial');
+  let current = 0;
+
+  function showNextTestimonial() {
+    testimonials[current].classList.remove('active');
+    current = (current + 1) % testimonials.length;
+    testimonials[current].classList.add('active');
+  }
+
+  setInterval(showNextTestimonial, 4000); // Change every 4s
+</script>
+
+
+</body>
+</html>

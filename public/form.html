@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout Page</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.paypal.com/sdk/js?client-id=AQN3dMs8QGo5jnmeBSK-qI0GGs0HhkOiQG7n4LmxiuvUIMRcFwsKAYQMeh3ZCrpajFmauW8ho4SRqrTB&currency=USD"></script>
+</head>
+<body>
+<div class="main-container">
+
+  <!-- Left Side: Form -->
+  <div class="checkout-form">
+    <h2>Billing Details</h2>
+    <form id="checkoutForm">
+      <div class="form-group"><label>First Name *</label><input type="text" name="firstName" required></div>
+      <div class="form-group"><label>Last Name *</label><input type="text" name="lastName" required></div>
+      <div class="form-group"><label>Company Name (optional)</label><input type="text" name="companyName"></div>
+      <div class="form-group">
+        <label>Country / Region *</label>
+        <select name="country" required>
+          <option value="US" selected>United States</option>
+          <option value="UK">United Kingdom</option>
+          <option value="Canada">Canada</option>
+          <option value="Ireland">Ireland</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Street Address *</label><input type="text" name="streetAddress" required></div>
+      <div class="form-group"><label>Apartment, suite, etc. (optional)</label><input type="text" name="apartment"></div>
+      <div class="form-group"><label>Town / City *</label><input type="text" name="city" required></div>
+      <div class="form-group"><label>County *</label><input type="text" name="county" required></div>
+      <div class="form-group"><label>Eircode (optional)</label><input type="text" name="eircode"></div>
+      <div class="form-group">
+        <label>Phone *</label>
+        <input type="tel" name="phone" required placeholder="+1 212 555 4567" pattern="\+1\s\d{3}\s\d{3}\s\d{4}" title="Phone must be US format like +1 212 555 4567">
+      </div>
+      <div class="form-group"><label>Email Address *</label><input type="email" name="email" required></div>
+      <div class="form-group"><label>VIN Number *</label><input type="text" name="vin" required></div>
+      <div class="form-group"><label>Note (optional)</label><textarea name="note"></textarea></div>
+
+      <!-- Hidden fields for vehicle -->
+      <input type="hidden" name="vehicleType" id="vehicleType">
+      <input type="hidden" name="vehiclePrice" id="vehiclePrice">
+      <input type="hidden" name="vehicleImage" id="vehicleImage">
+    </form>
+  </div>
+
+  <!-- Right Side: Order Summary -->
+  <div class="order-summary">
+    <h2>Your Order</h2>
+    <div class="summary-row">
+      <img id="summaryImage" src="bike.png" alt="Vehicle" />
+      <span id="summaryText">$20 × 1</span>
+      <span id="summaryPrice">$20</span>
+    </div>
+    <div class="summary-row">
+      <span>Subtotal</span><span id="summarySubtotal">$20</span>
+    </div>
+    <div class="summary-row summary-total">
+      <span>Total</span><span id="summaryTotal">$20</span>
+    </div>
+
+    <h3>Payment Method</h3>
+    <div id="paypal-button-container"></div>
+  </div>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const type = urlParams.get('type') || 'bike';
+  const prices = { bike: 20, car: 25, truck: 30 };
+  const images = { bike: 'bike.png', car: 'car.png', truck: 'truck.png' };
+
+  // Populate hidden inputs and summary
+  document.getElementById('vehicleType').value = type;
+  document.getElementById('vehiclePrice').value = prices[type];
+  document.getElementById('vehicleImage').value = images[type];
+  document.getElementById('summaryImage').src = images[type];
+  document.getElementById('summaryText').textContent = `$${prices[type]} × 1`;
+  document.getElementById('summaryPrice').textContent = `$${prices[type]}`;
+  document.getElementById('summarySubtotal').textContent = `$${prices[type]}`;
+  document.getElementById('summaryTotal').textContent = `$${prices[type]}`;
+
+  paypal.Buttons({
+    createOrder: function () {
+      return fetch('/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: prices[type] })
+      })
+      .then(res => res.json())
+      .then(order => order.id);
+    },
+    onApprove: function (data, actions) {
+      return actions.order.capture().then(() => {
+        const form = document.getElementById('checkoutForm');
+        const formData = new FormData(form);
+        const jsonData = Object.fromEntries(formData.entries());
+        jsonData.paymentMethod = 'PayPal';
+
+        fetch('/submit-form', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jsonData)
+        })
+        .then(res => res.json())
+        .then(result => {
+          if (result.message === 'Form submitted successfully') {
+            window.location.href = 'thankyou.html';
+          } else {
+            alert('Something went wrong. Please try again.');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert('There was an error submitting the form.');
+        });
+      });
+    }
+  }).render('#paypal-button-container');
+</script>
+</body>
+</html>

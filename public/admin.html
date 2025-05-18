@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - CarFax Pro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f7f7f7;
+    }
+    h1 {
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background-color: #222;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Panel - Submitted Orders</h1>
+  <table id="orders-table">
+    <thead>
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Company</th>
+        <th>Country</th>
+        <th>Street Address</th>
+        <th>Apartment</th>
+        <th>City</th>
+        <th>County</th>
+        <th>Eircode</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>VIN</th>
+        <th>Note</th>
+        <th>Vehicle Type</th>
+        <th>Vehicle Price</th>
+        <th>Payment Method</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+
+    <tbody></tbody>
+  </table>
+
+<script>
+  fetch('/admin/data')
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector('#orders-table tbody');
+      data.forEach(order => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${order.firstName || ''}</td>
+          <td>${order.lastName || ''}</td>
+          <td>${order.companyName || ''}</td>
+          <td>${order.country || ''}</td>
+          <td>${order.streetAddress || ''}</td>
+          <td>${order.apartment || ''}</td>
+          <td>${order.city || ''}</td>
+          <td>${order.county || ''}</td>
+          <td>${order.eircode || ''}</td>
+          <td>${order.phone || ''}</td>
+          <td>${order.email || ''}</td>
+          <td>${order.vin || ''}</td>
+          <td>${order.note || ''}</td>
+          <td>${order.vehicleType || ''}</td>
+          <td>$${order.vehiclePrice || ''}</td>
+          <td>${order.paymentMethod || 'N/A'}</td>
+          <td>${new Date(order.createdAt).toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      console.error('Error loading orders:', err);
+    });
+</script>
+
+
+</body>
+</html>
