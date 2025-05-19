@@ -1,6 +1,6 @@
 // server.js
-const express = require('express');
 require('dotenv').config();
+const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -35,7 +35,7 @@ app.use(
 );
 
 // MongoDB connection
-mongoose.connect(MONGO_URI, {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
