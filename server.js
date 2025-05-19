@@ -1,5 +1,6 @@
 // server.js
 const express = require('express');
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -26,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Session config
 app.use(
   session({
-    secret: 'carfaxsupersecret',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: MONGO_URI })
@@ -106,26 +107,30 @@ app.post('/submit-form', async (req, res) => {
   }
 });
 
-// Admin login
-app.get('/admin', (req, res) => {
+function checkAuth(req, res, next) {
   if (req.session.loggedIn) {
-    res.sendFile(path.join(__dirname, 'public/admin.html'));
+    next();
   } else {
-    res.sendFile(path.join(__dirname, 'public/login.html'));
+    res.redirect('/login.html'); //Redirects to your custom login form
   }
+}
+
+// Admin login
+app.get('/admin',checkAuth,(req, res) => {
+   res.sendFile(path.join(__dirname, 'public/admin.html'));
 });
 
 app.post('/admin/login', (req, res) => {
   const { password } = req.body;
-  if (password === '123HelloWorldCarFaxpro') {
+  if (password === process.env.ADMIN_PASSWORD) {
     req.session.loggedIn = true;
     res.redirect('/admin');
   } else {
-    res.send('Incorrect password');
+     res.status(401).send('Incorrect password');
   }
 });
 
-app.get('/admin/data', async (req, res) => {
+app.get('/admin/data',checkAuth, async (req, res) => {
   if (!req.session.loggedIn) return res.status(403).send('Unauthorized');
   const data = await Submission.find().sort({ createdAt: -1 });
   res.json(data);
