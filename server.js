@@ -9,7 +9,7 @@ const MongoStore = require('connect-mongo');
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk'); // ✅ Correct SDK
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 // const MONGO_URI = 'mongodb+srv://carfaxuser:CarfaxSecure123@cluster0.t44eyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 
