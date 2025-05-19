@@ -67,6 +67,46 @@
 </div>
 
 <script>
+
+  const phoneInput = document.querySelector('input[name="phone"]');
+  const countrySelect = document.querySelector('select[name="country"]');
+
+  function updatePhoneValidation() {
+    const country = countrySelect.value;
+    let pattern, title, placeholder;
+
+    switch (country) {
+      case 'US':
+        pattern = '^\\+1\\s\\d{3}\\s\\d{3}\\s\\d{4}$';
+        title = 'Phone must be US format like +1 212 555 4567';
+        placeholder = '+1 212 555 4567';
+        break;
+      case 'UK':
+        pattern = '^\\+44\\s\\d{4}\\s\\d{6}$';
+        title = 'Phone must be UK format like +44 1234 567890';
+        placeholder = '+44 1234 567890';
+        break;
+      case 'Canada':
+        pattern = '^\\+1\\s\\d{3}\\s\\d{3}\\s\\d{4}$';
+        title = 'Phone must be Canada format like +1 416 555 7890';
+        placeholder = '+1 416 555 7890';
+        break;
+      default:
+        pattern = '.*'; // fallback to any
+        title = 'Enter a valid phone number';
+        placeholder = 'Enter phone number';
+    }
+
+    phoneInput.pattern = pattern;
+    phoneInput.title = title;
+    phoneInput.placeholder = placeholder;
+  }
+
+  // Update on page load and when country changes
+  updatePhoneValidation();
+  countrySelect.addEventListener('change', updatePhoneValidation);
+
+
   const urlParams = new URLSearchParams(window.location.search);
   const type = urlParams.get('type') || 'bike';
   const prices = { bike: 20, car: 25, truck: 30 };
