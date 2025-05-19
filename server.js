@@ -12,10 +12,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 // const MONGO_URI = 'mongodb+srv://carfaxuser:CarfaxSecure123@cluster0.t44eyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
+
+// ✅ Define MONGO_URI **before** using it
+const MONGO_URI = process.env.MONGO_URI;
+
+
 // ✅ PayPal Environment Setup
 const environment = new checkoutNodeJssdk.core.SandboxEnvironment(
-  'AQN3dMs8QGo5jnmeBSK-qI0GGs0HhkOiQG7n4LmxiuvUIMRcFwsKAYQMeh3ZCrpajFmauW8ho4SRqrTB',
-  'EME_IkqAWZK5osr1WEjNROk4Y9M-JFWTyRj10l8cS3msLk3oYhPYl4m1MHX8NbmFpbyEgkVR76D4TaJR'
+    process.env.PAYPAL_CLIENT_ID,
+   process.env.PAYPAL_CLIENT_SECRET
 );
 const payPalClient = new checkoutNodeJssdk.core.PayPalHttpClient(environment);
 
@@ -35,8 +40,6 @@ app.use(
 );
 
 // MongoDB connection
-const MONGO_URI = process.env.MONGO_URI;
-
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
