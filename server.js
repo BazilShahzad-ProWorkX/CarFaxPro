@@ -43,6 +43,7 @@ app.use(
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  tls: true, // Make sure TLS is used
 }).then(() => {
   console.log('Connected to MongoDB');
 }).catch((err) => {
