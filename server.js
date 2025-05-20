@@ -6,53 +6,58 @@ const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const checkoutNodeJssdk = require('@paypal/checkout-server-sdk'); // ✅ Correct SDK
+const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
+const sanitize = require('mongo-sanitize'); // ✅ Prevent NoSQL injection
 
 const app = express();
 const PORT = process.env.PORT || 10000;
-// const MONGO_URI = 'mongodb+srv://carfaxuser:CarfaxSecure123@cluster0.t44eyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-
-
-// ✅ Define MONGO_URI **before** using it
 const MONGO_URI = process.env.MONGO_URI;
 
+// ❌ Exit if PayPal credentials or Mongo URI are missing
+if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET || !MONGO_URI) {
+  console.error("❌ Missing required environment variables (PayPal credentials or Mongo URI)");
+  process.exit(1);
+}
 
 // ✅ PayPal Environment Setup
 const environment = new checkoutNodeJssdk.core.LiveEnvironment(
-    process.env.PAYPAL_CLIENT_ID,
-   process.env.PAYPAL_CLIENT_SECRET
+  process.env.PAYPAL_CLIENT_ID,
+  process.env.PAYPAL_CLIENT_SECRET
 );
 const payPalClient = new checkoutNodeJssdk.core.PayPalHttpClient(environment);
 
-// Middleware
+// ✅ Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session config
+// ✅ Secure Session Configuration
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+      maxAge: 1000 * 60 * 60 * 2, // 2 hours
+    },
     store: MongoStore.create({ mongoUrl: MONGO_URI })
   })
 );
 
-// MongoDB connection
+// ✅ MongoDB Connection
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  tls: true, // Make sure TLS is used
+  tls: true
 }).then(() => {
-  console.log('Connected to MongoDB');
+  console.log('✅ Connected to MongoDB');
 }).catch((err) => {
-  console.error('MongoDB connection error:', err);
+  console.error('❌ MongoDB connection error:', err);
 });
 
-
-
-// Mongoose Schema
+// ✅ Mongoose Schema
 const formSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
@@ -72,10 +77,9 @@ const formSchema = new mongoose.Schema({
   paymentMethod: { type: String, default: 'Mocked' },
   createdAt: { type: Date, default: Date.now },
 });
-
 const Submission = mongoose.model('Submission', formSchema);
 
-// Routes
+// ✅ Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
@@ -84,52 +88,50 @@ app.get('/form', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/form.html'));
 });
 
-// ✅ PayPal Order Creation Endpoint
+// ✅ PayPal Order Creation
 app.post('/create-order', async (req, res) => {
+  const amount = sanitize(req.body.amount || '20');
   const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
   request.prefer('return=representation');
   request.requestBody({
     intent: 'CAPTURE',
-    purchase_units: [{
-      amount: {
-        currency_code: 'USD',
-        value: req.body.amount || '20'
-      }
-    }]
+    purchase_units: [{ amount: { currency_code: 'USD', value: amount } }]
   });
 
   try {
     const order = await payPalClient.execute(request);
     res.status(200).json({ id: order.result.id });
   } catch (err) {
-    console.error('PayPal Order Error:', err);
+    console.error('❌ PayPal Order Error:', err);
     res.status(500).send('Error creating PayPal order');
   }
 });
 
-// Form submission
+// ✅ Form Submission
 app.post('/submit-form', async (req, res) => {
   try {
-    const newSubmission = new Submission(req.body);
+    const cleanData = sanitize(req.body);
+    const newSubmission = new Submission(cleanData);
     await newSubmission.save();
     res.status(200).json({ message: "Form submitted successfully" });
   } catch (err) {
-    console.error('Form submission error:', err);
+    console.error('❌ Form submission error:', err);
     res.status(500).json({ message: 'Something went wrong' });
   }
 });
 
+// ✅ Auth Middleware
 function checkAuth(req, res, next) {
   if (req.session.loggedIn) {
     next();
   } else {
-    res.redirect('/login.html'); //Redirects to your custom login form
+    res.redirect('/login.html');
   }
 }
 
-// Admin login
-app.get('/admin',checkAuth,(req, res) => {
-   res.sendFile(path.join(__dirname, 'public/admin.html'));
+// ✅ Admin Panel
+app.get('/admin', checkAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/admin.html'));
 });
 
 app.post('/admin/login', (req, res) => {
@@ -138,16 +140,16 @@ app.post('/admin/login', (req, res) => {
     req.session.loggedIn = true;
     res.redirect('/admin');
   } else {
-     res.status(401).send('Incorrect password');
+    res.status(401).send('Incorrect password');
   }
 });
 
-app.get('/admin/data',checkAuth, async (req, res) => {
-  if (!req.session.loggedIn) return res.status(403).send('Unauthorized');
+app.get('/admin/data', checkAuth, async (req, res) => {
   const data = await Submission.find().sort({ createdAt: -1 });
   res.json(data);
 });
 
+// ✅ Start Server
 app.listen(PORT, () => {
   console.log(`✅ Server running at: http://localhost:${PORT}`);
 });
@@ -186,41 +188,31 @@ app.listen(PORT, () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // // server.js
+// require('dotenv').config();
 // const express = require('express');
 // const bodyParser = require('body-parser');
 // const mongoose = require('mongoose');
 // const path = require('path');
 // const session = require('express-session');
 // const MongoStore = require('connect-mongo');
-
+// const checkoutNodeJssdk = require('@paypal/checkout-server-sdk'); // ✅ Correct SDK
 
 // const app = express();
-// const PORT = process.env.PORT || 3000;
-// const MONGO_URI = 'mongodb+srv://carfaxuser:CarfaxSecure123@cluster0.t44eyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+// const PORT = process.env.PORT || 10000;
+// // const MONGO_URI = 'mongodb+srv://carfaxuser:CarfaxSecure123@cluster0.t44eyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+
+
+// // ✅ Define MONGO_URI **before** using it
+// const MONGO_URI = process.env.MONGO_URI;
+
+
+// // ✅ PayPal Environment Setup
+// const environment = new checkoutNodeJssdk.core.LiveEnvironment(
+//     process.env.PAYPAL_CLIENT_ID,
+//    process.env.PAYPAL_CLIENT_SECRET
+// );
+// const payPalClient = new checkoutNodeJssdk.core.PayPalHttpClient(environment);
 
 // // Middleware
 // app.use(bodyParser.urlencoded({ extended: true }));
@@ -230,19 +222,27 @@ app.listen(PORT, () => {
 // // Session config
 // app.use(
 //   session({
-//     secret: 'carfaxsupersecret',
+//     secret: process.env.SESSION_SECRET,
 //     resave: false,
 //     saveUninitialized: false,
 //     store: MongoStore.create({ mongoUrl: MONGO_URI })
 //   })
 // );
 
-// // Connect to MongoDB
+// // MongoDB connection
 // mongoose.connect(MONGO_URI, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
+//   tls: true, // Make sure TLS is used
+// }).then(() => {
+//   console.log('Connected to MongoDB');
+// }).catch((err) => {
+//   console.error('MongoDB connection error:', err);
 // });
 
+
+
+// // Mongoose Schema
 // const formSchema = new mongoose.Schema({
 //   firstName: String,
 //   lastName: String,
@@ -263,7 +263,6 @@ app.listen(PORT, () => {
 //   createdAt: { type: Date, default: Date.now },
 // });
 
-
 // const Submission = mongoose.model('Submission', formSchema);
 
 // // Routes
@@ -275,12 +274,34 @@ app.listen(PORT, () => {
 //   res.sendFile(path.join(__dirname, 'public/form.html'));
 // });
 
+// // ✅ PayPal Order Creation Endpoint
+// app.post('/create-order', async (req, res) => {
+//   const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
+//   request.prefer('return=representation');
+//   request.requestBody({
+//     intent: 'CAPTURE',
+//     purchase_units: [{
+//       amount: {
+//         currency_code: 'USD',
+//         value: req.body.amount || '20'
+//       }
+//     }]
+//   });
+
+//   try {
+//     const order = await payPalClient.execute(request);
+//     res.status(200).json({ id: order.result.id });
+//   } catch (err) {
+//     console.error('PayPal Order Error:', err);
+//     res.status(500).send('Error creating PayPal order');
+//   }
+// });
+
+// // Form submission
 // app.post('/submit-form', async (req, res) => {
 //   try {
 //     const newSubmission = new Submission(req.body);
 //     await newSubmission.save();
-
-//     // Respond with JSON so frontend can handle redirect
 //     res.status(200).json({ message: "Form submitted successfully" });
 //   } catch (err) {
 //     console.error('Form submission error:', err);
@@ -288,32 +309,45 @@ app.listen(PORT, () => {
 //   }
 // });
 
+// function checkAuth(req, res, next) {
+//   if (req.session.loggedIn) {
+//     next();
+//   } else {
+//     res.redirect('/login.html'); //Redirects to your custom login form
+//   }
+// }
 
 // // Admin login
-// app.get('/admin', (req, res) => {
-//   if (req.session.loggedIn) {
-//     res.sendFile(path.join(__dirname, 'public/admin.html'));
-//   } else {
-//     res.sendFile(path.join(__dirname, 'public/login.html'));
-//   }
+// app.get('/admin',checkAuth,(req, res) => {
+//    res.sendFile(path.join(__dirname, 'public/admin.html'));
 // });
 
 // app.post('/admin/login', (req, res) => {
 //   const { password } = req.body;
-//   if (password === '123HelloWorldCarFaxpro') {
+//   if (password === process.env.ADMIN_PASSWORD) {
 //     req.session.loggedIn = true;
 //     res.redirect('/admin');
 //   } else {
-//     res.send('Incorrect password');
+//      res.status(401).send('Incorrect password');
 //   }
 // });
 
-// app.get('/admin/data', async (req, res) => {
+// app.get('/admin/data',checkAuth, async (req, res) => {
 //   if (!req.session.loggedIn) return res.status(403).send('Unauthorized');
 //   const data = await Submission.find().sort({ createdAt: -1 });
 //   res.json(data);
 // });
 
 // app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
+//   console.log(`✅ Server running at: http://localhost:${PORT}`);
 // });
+
+
+
+
+
+
+
+
+
+
