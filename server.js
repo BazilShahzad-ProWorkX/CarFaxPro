@@ -18,7 +18,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 
 // ✅ PayPal Environment Setup
-const environment = new checkoutNodeJssdk.core.SandboxEnvironment(
+const environment = new checkoutNodeJssdk.core.LiveEnvironment(
     process.env.PAYPAL_CLIENT_ID,
    process.env.PAYPAL_CLIENT_SECRET
 );
